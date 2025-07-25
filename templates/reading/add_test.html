@@ -1,0 +1,256 @@
+{% extends 'base.html' %}
+
+{% block title %}Create New Reading Test{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --bg-color: #f5f7fa;
+        --container-bg: white;
+        --text-color: #2c3e50;
+        --title-color: #2c5282;
+        --border-color: #e8f4f8;
+        --button-bg: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+        --button-hover-bg: linear-gradient(135deg, #3182ce 0%, #2b6cb0 100%);
+        --input-border: #e2e8f0;
+        --input-focus-border: #4299e1;
+    }
+
+    .form-container {
+        background-color: var(--container-bg);
+        color: var(--text-color);
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        padding: 2.5rem;
+    }
+
+    .form-container h1, .form-container h4 {
+        color: var(--title-color);
+    }
+
+    .form-container .form-label {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .form-container .form-control,
+    .form-container .form-select {
+        border-color: var(--input-border);
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .form-container .form-control:focus,
+    .form-container .form-select:focus {
+        border-color: var(--input-focus-border);
+        box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
+    }
+
+    .btn-primary {
+        background: var(--button-bg);
+        border: none;
+        transition: background 0.3s, transform 0.2s;
+    }
+    .btn-primary:hover {
+        background: var(--button-hover-bg);
+        transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        border: none;
+    }
+
+    .card {
+        border-color: var(--border-color);
+    }
+
+    @keyframes fadeInDown {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeOutUp {
+        from { opacity: 1; transform: translateY(0); }
+        to { opacity: 0; transform: translateY(-20px); }
+    }
+
+    .form-entering {
+        animation: fadeInDown 0.5s ease forwards;
+    }
+
+    .form-leaving {
+        animation: fadeOutUp 0.5s ease forwards;
+    }
+</style>
+
+<div class="container py-5">
+    <div class="form-container">
+        <h1 class="mb-4 text-center">Create New Reading Test</h1>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <!-- Main Test Form -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-light"><h4>Test Details & Passages</h4></div>
+                <div class="card-body">
+                    {{ test_form.as_p }}
+                </div>
+            </div>
+
+            <!-- Question Blocks Section -->
+            <h4 class="mb-3">Question Blocks</h4>
+            {{ block_formset.management_form }}
+            <div id="block-form-list">
+                {% for block_form in block_formset %}
+                    <div class="block-form card mb-3">
+                        <div class="card-header d-flex justify-content-between align-items-center bg-light">
+                            <strong>Question Block</strong>
+                            <button type="button" class="btn-close remove-block-form" aria-label="Close"></button>
+                        </div>
+                        <div class="card-body">
+                            {{ block_form.as_p }}
+                            <hr>
+                            <h5>Questions for this block</h5>
+                            <div class="question-form-list">
+                                <!-- This will be populated by JavaScript -->
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-secondary add-question-form">Add Question</button>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <button type="button" id="add-block-form" class="btn btn-secondary">Add Another Question Block</button>
+
+            <hr class="my-4">
+            <button type="submit" class="btn btn-primary btn-lg w-100">Save Entire Test</button>
+        </form>
+    </div>
+</div>
+
+<!-- Template for a new block form -->
+<div id="empty-block-form-template" class="d-none">
+    <div class="block-form card mb-3">
+        <div class="card-header d-flex justify-content-between align-items-center bg-light">
+            <strong>Question Block</strong>
+            <button type="button" class="btn-close remove-block-form" aria-label="Close"></button>
+        </div>
+        <div class="card-body">
+            {{ block_formset.empty_form.as_p }}
+            <hr>
+            <h5>Questions for this block</h5>
+            <div class="question-form-list">
+                <!-- This will be populated by JavaScript -->
+            </div>
+            <button type="button" class="btn btn-sm btn-outline-secondary add-question-form">Add Question</button>
+        </div>
+    </div>
+</div>
+
+<!-- Template for a new question form -->
+<div id="empty-question-form-template" class="d-none">
+    {% with formset=empty_question_formset %}
+        <div class="question-form border-top pt-3 mt-3">
+            <div class="d-flex justify-content-end">
+                 <button type="button" class="btn-close btn-sm remove-question-form" aria-label="Close"></button>
+            </div>
+            {{ formset.empty_form.as_p }}
+        </div>
+    {% endwith %}
+</div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const blockFormList = document.getElementById('block-form-list');
+    const addBlockBtn = document.getElementById('add-block-form');
+    const emptyBlockFormTemplate = document.getElementById('empty-block-form-template').innerHTML;
+    const emptyQuestionFormTemplate = document.getElementById('empty-question-form-template').innerHTML;
+
+    function updateFormIndexes() {
+        const blockForms = blockFormList.querySelectorAll('.block-form');
+        const totalFormsInput = document.querySelector('#id_form-TOTAL_FORMS');
+        totalFormsInput.value = blockForms.length;
+
+        blockForms.forEach((blockForm, blockIndex) => {
+            // Update block form prefixes
+            blockForm.querySelectorAll('input, select, textarea').forEach(input => {
+                const name = input.getAttribute('name');
+                if (name) input.setAttribute('name', name.replace(/form-\d+-/, `form-${blockIndex}-`));
+                const id = input.getAttribute('id');
+                if (id) input.setAttribute('id', id.replace(/id_form-\d+-/, `id_form-${blockIndex}-`));
+            });
+
+            const questionFormList = blockForm.querySelector('.question-form-list');
+            const questionForms = questionFormList.querySelectorAll('.question-form');
+            const nestedTotalFormsInput = blockForm.querySelector(`input[name$="-TOTAL_FORMS"]`);
+
+            if (nestedTotalFormsInput) {
+                nestedTotalFormsInput.value = questionForms.length;
+                nestedTotalFormsInput.setAttribute('name', `questions-${blockIndex}-TOTAL_FORMS`);
+                nestedTotalFormsInput.setAttribute('id', `id_questions-${blockIndex}-TOTAL_FORMS`);
+            }
+
+            questionForms.forEach((qForm, qIndex) => {
+                qForm.querySelectorAll('input, select, textarea').forEach(input => {
+                    const name = input.getAttribute('name');
+                    if (name) input.setAttribute('name', name.replace(/questions-\d+-__prefix__-/, `questions-${blockIndex}-${qIndex}-`));
+                    const id = input.getAttribute('id');
+                    if (id) input.setAttribute('id', id.replace(/id_questions-\d+-__prefix__-/, `id_questions-${blockIndex}-${qIndex}-`));
+                });
+            });
+        });
+    }
+
+    addBlockBtn.addEventListener('click', () => {
+        const totalForms = blockFormList.querySelectorAll('.block-form').length;
+        const newBlockHtml = emptyBlockFormTemplate.replace(/__prefix__/g, totalForms);
+        const newBlockDiv = document.createElement('div');
+        newBlockDiv.innerHTML = newBlockHtml;
+        const newForm = newBlockDiv.firstElementChild;
+        newForm.classList.add('form-entering');
+        blockFormList.appendChild(newForm);
+        updateFormIndexes();
+    });
+
+    blockFormList.addEventListener('click', function(e) {
+        if (e.target.classList.contains('remove-block-form')) {
+            const formToRemove = e.target.closest('.block-form');
+            formToRemove.classList.add('form-leaving');
+            formToRemove.addEventListener('animationend', () => {
+                formToRemove.remove();
+                updateFormIndexes();
+            });
+        }
+        if (e.target.classList.contains('add-question-form')) {
+            const blockForm = e.target.closest('.block-form');
+            const questionList = blockForm.querySelector('.question-form-list');
+            const blockIndex = Array.from(blockFormList.children).indexOf(blockForm);
+            const questionCount = questionList.children.length;
+
+            let newQuestionHtml = emptyQuestionFormTemplate
+                .replace(/__prefix__/g, questionCount)
+                .replace(/questions-/g, `questions-${blockIndex}-`);
+
+            const newQuestionDiv = document.createElement('div');
+            newQuestionDiv.innerHTML = newQuestionHtml;
+            const newForm = newQuestionDiv.firstElementChild;
+            newForm.classList.add('form-entering');
+            questionList.appendChild(newForm);
+            updateFormIndexes();
+        }
+        if (e.target.classList.contains('remove-question-form')) {
+            const formToRemove = e.target.closest('.question-form');
+            formToRemove.classList.add('form-leaving');
+            formToRemove.addEventListener('animationend', () => {
+                formToRemove.remove();
+                updateFormIndexes();
+            });
+        }
+    });
+
+    updateFormIndexes();
+});
+</script>
+{% endblock %}

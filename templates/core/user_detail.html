@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block title %}Details for {{ target_user.username }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Statistics for: <span class="text-primary">{{ target_user.username }}</span></h1>
+        <a href="{% url 'user_statistics' %}" class="btn btn-secondary">&larr; Back to All Users</a>
+    </div>
+
+    <!-- Reading Section -->
+    <h2 class="mb-3">Reading Test History</h2>
+    <div class="accordion" id="readingAccordion">
+        {% for test, data in reading_tests_data.items %}
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="reading-heading-{{ test.id }}">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#reading-collapse-{{ test.id }}">
+                        {{ test.title }} - <strong class="ms-2">Score: {{ data.correct }} / {{ data.total }}</strong>
+                    </button>
+                </h2>
+                <div id="reading-collapse-{{ test.id }}" class="accordion-collapse collapse" data-bs-parent="#readingAccordion">
+                    <div class="accordion-body">
+                        <table class="table table-sm table-bordered">
+                            <thead><tr><th>Q#</th><th>Your Answer</th><th>Correct Answer</th><th>Result</th></tr></thead>
+                            <tbody>
+                                {% for answer in data.answers %}
+                                    <tr class="{% if answer.is_correct %}table-success{% else %}table-danger{% endif %}">
+                                        <td>{{ answer.question.question_number }}</td>
+                                        <td>{{ answer.submitted_answer|default:"(empty)" }}</td>
+                                        <td>{{ answer.question.correct_answer }}</td>
+                                        <td>{% if answer.is_correct %}Correct{% else %}Incorrect{% endif %}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="card card-body bg-light">
+                <p class="text-muted mb-0">This user has not taken any reading tests.</p>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Listening Section -->
+    <h2 class="my-3 mt-5">Listening Test History</h2>
+    <div class="accordion" id="listeningAccordion">
+        {% for test, data in listening_tests_data.items %}
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="listening-heading-{{ test.id }}">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#listening-collapse-{{ test.id }}">
+                        {{ test.title }} - <strong class="ms-2">Score: {{ data.correct }} / {{ data.total }}</strong>
+                    </button>
+                </h2>
+                <div id="listening-collapse-{{ test.id }}" class="accordion-collapse collapse" data-bs-parent="#listeningAccordion">
+                    <div class="accordion-body">
+                        <table class="table table-sm table-bordered">
+                            <thead><tr><th>Q#</th><th>Your Answer</th><th>Correct Answer</th><th>Result</th></tr></thead>
+                            <tbody>
+                                {% for answer in data.answers %}
+                                    <tr class="{% if answer.is_correct %}table-success{% else %}table-danger{% endif %}">
+                                        <td>{{ answer.question.question_number }}</td>
+                                        <td>{{ answer.submitted_answer|default:"(empty)" }}</td>
+                                        <td>{{ answer.question.correct_answer }}</td>
+                                        <td>{% if answer.is_correct %}Correct{% else %}Incorrect{% endif %}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="card card-body bg-light">
+                <p class="text-muted mb-0">This user has not taken any listening tests.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

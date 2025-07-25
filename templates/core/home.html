@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}Welcome to IELTS Prep{% endblock %}
+
+{% block content %}
+<div class="p-5 mb-4 bg-light rounded-3">
+    <div class="container-fluid py-5">
+        <h1 class="display-5 fw-bold">Welcome to Your IELTS Practice Platform</h1>
+        <p class="col-md-8 fs-4">Hone your skills with our timed reading and listening practice tests, designed to simulate real exam conditions.</p>
+        <p>Select a section below to get started.</p>
+        <a href="{% url 'reading_list' %}" class="btn btn-primary btn-lg me-2">Reading Tests</a>
+        <a href="{% url 'listening_list' %}" class="btn btn-secondary btn-lg">Listening Tests</a>
+    </div>
+</div>
+{% endblock %}

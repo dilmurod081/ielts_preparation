@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Test Rules - {{ test.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header text-center bg-light">
+                    <h1 class="h3 mb-0">Test Instructions and Rules</h1>
+                </div>
+                <div class="card-body p-4">
+                    <h5 class="card-title">Before you begin: {{ test.title }}</h5>
+                    <p>Please read the following rules carefully before starting your test.</p>
+                    
+                    <!-- NEW: Audio Check Section -->
+                    <div class="card my-4">
+                        <div class="card-body text-center">
+                            <h6 class="card-subtitle mb-2 text-muted">Audio Check</h6>
+                            <p>Press play on the audio player below to make sure your sound is working correctly.</p>
+                            <audio controls class="w-75">
+                                <!-- This is a short, silent audio file for testing purposes -->
+                                <source src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=" type="audio/wav">
+                                Your browser does not support the audio element.
+                            </audio>
+                        </div>
+                    </div>
+                    <!-- END: Audio Check Section -->
+
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><strong>Audio:</strong> You will hear each part of the test once only. Make sure your audio is working and the volume is at a comfortable level.</li>
+                        <li class="list-group-item"><strong>Anti-Cheating Policy:</strong> To ensure fair testing conditions, switching to other browser tabs or applications is monitored.
+                            <ul>
+                                <li>Switching away from the test tab more than <strong>3 times</strong> will result in your test being automatically blocked.</li>
+                                <li>If your test is blocked, your account will be suspended.</li>
+                            </ul>
+                        </li>
+                        <li class="list-group-item"><strong>Submission:</strong> You should answer all questions as you listen. You can submit your answers at the end of the test.</li>
+                    </ul>
+
+                    <p class="mt-4 text-center">By clicking "Accept and Start Test", you agree to abide by these rules.</p>
+
+                    <div class="d-grid gap-2 d-sm-flex justify-content-sm-center mt-4">
+                        <a href="{% url 'listening_list' %}" class="btn btn-outline-secondary btn-lg px-4">Decline</a>
+                        <a href="{% url 'listening_test_detail' test.id %}" class="btn btn-primary btn-lg px-4 gap-3">Accept and Start Test</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

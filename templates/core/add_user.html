@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Add New User{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h2 class="mb-4">Create a New User Account</h2>
+            <div class="card">
+                <div class="card-body">
+                    <p>The user will be created with a temporary, unusable password. They will need to use the "Forgot Password" link on the login page to set their own password.</p>
+                    <hr>
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <!-- Render the user creation form -->
+                        {{ user_form.as_p }}
+
+                        <!-- Render the profile form -->
+                        {{ profile_form.as_p }}
+
+                        <button type="submit" class="btn btn-primary w-100 mt-3">Create User</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+<div class="question-block">
+    <p class="question-instructions">{{ block.instructions }}</p>
+
+    {% if block.question_type == 'matching' %}
+        {% if block.options_list %}<div class="card my-3 bg-light"><div class="card-header fw-bold">List of Options</div><div class="card-body">{% for option in block.options_list %}<p class="mb-1">{{ option }}</p>{% endfor %}</div></div>{% endif %}
+        <table class="table table-borderless align-middle">
+            <tbody>
+                {% for question in block.questions %}<tr><td style="width: 50%;"><strong>{{ question.question_number }}.</strong> {{ question.question_text }}</td><td><select name="question_{{ question.id }}" class="form-select form-select-sm"><option selected disabled>Select...</option>{% for option in block.options_list %}<option value="{{option}}">{{option}}</option>{% endfor %}</select></td></tr>{% endfor %}
+            </tbody>
+        </table>
+    {% elif block.prose_with_inputs %}
+        <div class="p-3 border rounded">{{ block.prose_with_inputs|safe }}</div>
+    {% else %}
+        {% for question in block.questions %}
+            <div class="d-flex my-3 align-items-center">
+                <div class="flex-grow-1"><strong>{{ question.question_number }}.</strong> {{ question.question_text }}</div>
+                <div style="min-width: 250px;">
+                    {% if block.question_type == 'multiple_choice' %}
+                        {% for choice in question.choices %}<div class="form-check"><input class="form-check-input" type="radio" name="question_{{ question.id }}" value="{{choice}}"><label class="form-check-label">{{choice}}</label></div>{% endfor %}
+                    {% elif block.question_type == 'true_false_not_given' %}
+                        <select name="question_{{ question.id }}" class="form-select form-select-sm"><option selected disabled>Select...</option><option value="True">True</option><option value="False">False</option><option value="Not Given">Not Given</option></select>
+                    {% else %}
+                        <input type="text" name="question_{{ question.id }}" class="form-control form-control-sm">
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>

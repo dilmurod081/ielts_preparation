@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>{% block title %}IELTS Practice Platform{% endblock %}</title>
+    <style>
+        body {
+            background-color: #f4f7f6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .navbar {
+            box-shadow: 0 2px 4px rgba(0,0,0,.1);
+        }
+        .main-content {
+            flex-grow: 1;
+        }
+        .footer {
+            background-color: #343a40;
+            color: white;
+            padding: 1rem 0;
+            text-align: center;
+        }
+        <style>
+    #highlighter-menu {
+        position: fixed; /* Use 'fixed' to position relative to the viewport */
+        z-index: 10000;
+        display: none; /* Hidden by default */
+    }
+</style>
+    </style>
+</head>
+<body>
+<div id="highlighter-menu" class="dropdown-menu">
+    <a href="#" id="highlight-btn" class="dropdown-item">Highlight</a>
+    <a href="#" id="delete-highlight-btn" class="dropdown-item text-danger">Remove Highlight</a>
+</div>
+  <nav class="navbar navbar-expand-lg navbar-light bg-white">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'home' %}">IELTS Prep</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto align-items-center">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'home' %}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'reading_list' %}">Reading</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'listening_list' %}">Listening</a>
+                </li>
+
+                {% if user.is_staff %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Admin Tools
+                    </a>
+           <!-- ... inside your <nav> ... -->
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="adminDropdown">
+                    <li><a class="dropdown-item" href="{% url 'add_reading_test' %}">Add Reading Test</a></li>
+                    <li><a class="dropdown-item" href="{% url 'add_listening_test' %}">Add Listening Test</a></li>
+                    <li><a class="dropdown-item" href="{% url 'add_user' %}">Add New User</a></li>
+
+                    <!-- ADD THIS NEW LINK -->
+                    <li><a class="dropdown-item" href="{% url 'user_statistics' %}">User Statistics</a></li>
+
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="/admin/">Full Admin Panel</a></li>
+                </ul>
+<!-- ... -->
+                </li>
+                {% endif %}
+
+                <li class="nav-item ms-lg-2">
+                    {% if user.is_authenticated %}
+                        <form method="post" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-secondary btn-sm">Logout</button>
+                        </form>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-primary btn-sm">Login</a>
+                    {% endif %}
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+    <main class="container my-5 main-content">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 IELTS Practice Platform. All Rights Reserved.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

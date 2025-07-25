@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}User Statistics{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>User Statistics</h1>
+        <a href="{% url 'home' %}" class="btn btn-secondary">Back to Home</a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col">Username</th>
+                            <th scope="col" class="text-center">Reading Tests Taken</th>
+                            <th scope="col" class="text-center">Reading Avg. Score</th>
+                            <th scope="col" class="text-center">Listening Tests Taken</th>
+                            <th scope="col" class="text-center">Listening Avg. Score</th>
+                            <th scope="col" class="text-center">Actions</th> <!-- NEW COLUMN -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in user_data %}
+                        <tr>
+                            <td class="fw-bold">{{ user.username }}</td>
+                            <td class="text-center">{{ user.reading_tests }}</td>
+                            <td class="text-center">{{ user.reading_avg }}%</td>
+                            <td class="text-center">{{ user.listening_tests }}</td>
+                            <td class="text-center">{{ user.listening_avg }}%</td>
+                            <!-- NEW LINK -->
+                            <td class="text-center">
+                                <a href="{% url 'user_detail' user.id %}" class="btn btn-sm btn-outline-primary">View Details</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">No user data available yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

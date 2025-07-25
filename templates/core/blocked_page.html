@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Account Blocked{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm text-center">
+                <div class="card-header bg-danger text-white">
+                    <h1 class="h3 mb-0">Account Blocked</h1>
+                </div>
+                <div class="card-body p-4">
+                    <p class="lead">Your account has been suspended due to unusual activity during a test.</p>
+                    <p>You can submit an appeal to the administrator to have your account reviewed. If you have already submitted an appeal, please wait for the administrator to review it.</p>
+
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-success mt-3">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="post" class="mt-4">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <button type="submit" class="btn btn-primary">Submit Appeal</button>
+                    </form>
+
+                    <hr class="my-4">
+
+                    <p>If you believe you have been unblocked, click the button below to check your status.</p>
+                    <button id="reload-btn" class="btn btn-outline-secondary">Check Status / Reload Page</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const reloadBtn = document.getElementById('reload-btn');
+    reloadBtn.addEventListener('click', function() {
+        // This will force a reload of the page from the server
+        location.reload(true);
+    });
+});
+</script>
+{% endblock %}

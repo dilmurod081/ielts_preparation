@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Add New Listening Test{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1>Add a New Listening Test</h1>
+    <p>This page will create the main test container. You will be redirected to the admin panel to add the audio parts and questions.</p>
+    <hr>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="title" class="form-label">Test Title</label>
+            <input type="text" class="form-control" id="title" name="title" required placeholder="e.g., IELTS Listening Test 2">
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Create Test & Continue in Admin</button>
+    </form>
+</div>
+{% endblock %}

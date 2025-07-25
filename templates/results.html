@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Test Results{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="text-center p-4 my-4 bg-light rounded-3">
+        <h1>Results for: {{ test.title }}</h1>
+        <h2 class="display-4">Your Score: {{ score }} / {{ total_questions }}</h2>
+    </div>
+
+    <h3 class="mt-5">Detailed Breakdown</h3>
+    <div class="list-group">
+        {% for result in detailed_results %}
+            <div class="list-group-item">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">Question {{ result.question_number }}</h5>
+                    {% if result.is_correct %}
+                        <span class="badge bg-success">Correct</span>
+                    {% else %}
+                        <span class="badge bg-danger">Incorrect</span>
+                    {% endif %}
+                </div>
+                <p class="mb-1">{{ result.question_text }}</p>
+                <small><strong>Your Answer:</strong> 
+                    <span class="{% if result.is_correct %}text-success{% else %}text-danger{% endif %}">{{ result.submitted_answer|default:"(No answer)" }}</span>
+                </small>
+                <br>
+                {% if not result.is_correct %}
+                <small><strong>Correct Answer:</strong> <span class="text-success">{{ result.correct_answer }}</span></small>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="text-center my-5">
+        <a href="{% url 'reading_list' %}" class="btn btn-primary btn-lg mx-2">Back to Reading Tests</a>
+        <a href="{% url 'listening_list' %}" class="btn btn-secondary btn-lg mx-2">Back to Listening Tests</a>
+    </div>
+</div>
+{% endblock %}
